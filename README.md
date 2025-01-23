@@ -30,7 +30,19 @@ you will see on the screen "failed to load" message on the screen, in the CloudW
 ```
 where ACCOUNT is your account number and REGION is the region to deploy to.
 
-2) Create test data to the Policy table - I did it manually through the web console to have something that looks like the following 
+2) You will need to edit App.tsx and update the following 3 fields of the "Amplify.configure" parameters
+``` typescript
+         userPoolId: "", // value of PoliciesStack.userPoolId 
+   userPoolClientId: "", // value of PoliciesStack.oauthClientId
+     identityPoolId: "", // value of PoliciesStack.identityPoolId
+```
+
+3) You will need to edit the URL and replace it with the value from "PoliciesStack.crudPolicyApiEndpoint(random alphanumeric)"
+``` typescript
+const [url, setUrl] = useState<string>("< PoliciesStack.crudPolicyApiEndpoint... >/v1/policies");
+```
+
+4) Create test data to the Policy table - I did it manually through the web console to have something that looks like the following 
 
 | tenantId (String) | id (String) |
 |-------------------|-------------|
@@ -39,16 +51,16 @@ where ACCOUNT is your account number and REGION is the region to deploy to.
 | tenant3           | policy3     |
 | tenant1           | policy4     |
 
-3) Start the web app
+5) Start the web app
 ``` bash
 npm run dev
 ```
 
-4) Create at least user in the "Create Account" tab.  If you use gmail [see this link](https://gmail.googleblog.com/2008/03/2-hidden-ways-to-get-more-from-your.html) for creating multiple email addresses; yes, you will have problems at this point - do not panic.  The screen says "failed to load" because it is working, you do not have a populated customer attribute that has the value of your tenant.  Press the "Sign Out" button.
+6) Create at least user in the "Create Account" tab.  If you use gmail [see this link](https://gmail.googleblog.com/2008/03/2-hidden-ways-to-get-more-from-your.html) for creating multiple email addresses; yes, you will have problems at this point - do not panic.  The screen says "failed to load" because it is working, you do not have a populated customer attribute that has the value of your tenant.  Press the "Sign Out" button.
 
-5) Either in the Cognito console or CLI add a "User attribute" to the user your have created.  The attribute is 'custom:tenantId' and set the value to be 'tenant1'
+7) Either in the Cognito console or CLI add a "User attribute" to the user your have created.  The attribute is 'custom:tenantId' and set the value to be 'tenant1'
 
-6) In the web app Sign In with your modified user.  If you created the test data like table shows then you should see two records that show policy1 and policy4
+8) In the web app Sign In with your modified user.  If you created the test data like table shows then you should see two records that show policy1 and policy4
 
 
 

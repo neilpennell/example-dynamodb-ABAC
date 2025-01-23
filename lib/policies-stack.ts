@@ -1,5 +1,5 @@
 import * as cdk from 'aws-cdk-lib';
-import {CfnOutput, RemovalPolicy} from 'aws-cdk-lib';
+import {RemovalPolicy} from 'aws-cdk-lib';
 import {Construct} from 'constructs';
 import {join} from "path";
 import {AmplifyAuth} from "@aws-amplify/auth-construct";
@@ -8,15 +8,10 @@ import {AttributeType, Billing, TableV2} from "aws-cdk-lib/aws-dynamodb";
 import {NodejsFunction, NodejsFunctionProps} from "aws-cdk-lib/aws-lambda-nodejs";
 import {Architecture, Runtime, RuntimeManagementMode} from "aws-cdk-lib/aws-lambda";
 import {RetentionDays} from "aws-cdk-lib/aws-logs";
-import {Certificate} from "aws-cdk-lib/aws-certificatemanager";
-import {ARecord, HostedZone, RecordTarget} from "aws-cdk-lib/aws-route53";
-import {ApiGateway} from 'aws-cdk-lib/aws-route53-targets';
 import {ArnPrincipal, Effect, PolicyStatement, Role, ServicePrincipal} from "aws-cdk-lib/aws-iam";
 
 const STAGE = "v1";
 const BASEPATH = 'v1';
-const TOP_DOMAIN = 'hensgroup.info';
-const SUB_DOMAIN = 'policy';
 const POLICY_LAMBDA_LOCATION = 'lambdas';
 
 
@@ -66,11 +61,6 @@ export class PoliciesStack extends cdk.Stack {
     // ===
     // ==============================================
 
-    const domainCert = Certificate.fromCertificateArn(
-        this,
-        'domainCert',
-        'arn:aws:acm:us-east-2:911661353157:certificate/adf90e4a-7533-4fe8-afda-c78105010c7a' // *.hensgroup.info
-    );
     const crudAPI = new RestApi(this, 'crudPolicyApi', {
       restApiName: 'Policy CRUD Service',
       description: 'This is for Testing out ideas on how to implement ABAC on DynamoDB',
@@ -81,24 +71,6 @@ export class PoliciesStack extends cdk.Stack {
       deployOptions: {
         stageName: STAGE,
       },
-      domainName: {
-        domainName: `${SUB_DOMAIN}.${TOP_DOMAIN}`,
-        certificate: domainCert,
-        basePath: BASEPATH,
-      },
-    });
-
-    // TODO: certificate pre-created - need to figure out how to do this within CDK
-    const hostedZone = HostedZone.fromHostedZoneAttributes(this, 'HostedZone', {
-      hostedZoneId: 'Z10050741RW6K175NL39G',
-      zoneName: TOP_DOMAIN,
-    });
-
-    const aRecord = new ARecord(this, 'ARecord', {
-      deleteExisting: true,
-      zone: hostedZone,
-      target: RecordTarget.fromAlias(new ApiGateway(crudAPI)),
-      recordName: SUB_DOMAIN,
     });
 
     // ==============================================
@@ -153,12 +125,6 @@ export class PoliciesStack extends cdk.Stack {
     policies.addCorsPreflight({
       allowOrigins: ['*'],
     })
-
-    new CfnOutput(this, 'urlForApiGateway', {
-      value: `https://${SUB_DOMAIN}.${TOP_DOMAIN}/${BASEPATH}`,
-      description: 'CRUD API ID'
-    });
-
   }
 
   private abacRoleFor(roleName: string, fn: NodejsFunction, table: TableV2) {

@@ -53,13 +53,12 @@ class PolicyRecord {
 function App() {
   const [isLoading, setLoading] = useState(true)
   const {user, signOut} = useAuthenticator((context) => [context.user]);
-  // @ts-ignore
-  const [url, setUrl] = useState<string>("https://policy.hensgroup.info/v1/policies");
+  // @ts-expect-error WAD
+  const [url, setUrl] = useState<string>("< PoliciesStack.crudPolicyApiEndpoint22EC95A7 >/v1/policies");
   const [records, setRecords] = useState<PolicyRecord[]>([]);
   const [errorOccurred, setErrorOccurred] = useState<boolean>(false);
-  // @ts-ignore
+  // @ts-expect-error WAD
   const [authSession, setAuthSession] = useState<AuthSession | null>(null);
-  // setUrl("https://policy.hensgroup.info/v1");
 
   useEffect(() => {
     setLoading(true);
