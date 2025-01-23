@@ -1,4 +1,26 @@
-# Hello World for  policies with DynamoDB
+# Hello World for ABAC policies for DynamoDB
+
+This is meant to show an end to end example of how to implement ABAC in DynamoDB.
+
+This code does the following:
+* Takes an attribute that is defined in the Cognito User (customer attribute) 
+* Maps it into session attribute (sts:TagSession)
+* uses a conditional statement in the role to constrain the access to the Items (conditions: {"ForAllValues:StringEquals": {"dynamodb:LeadingKeys": ["${aws:PrincipalTag/TenantId}"] })
+
+To see how this works edit the file 'get-all.ts' and change the line
+``` typescript
+":tenant": getTenantId(event.headers.Authorization)
+```
+to be like the following
+``` typescript
+":tenant": "tenant2"
+```
+pay attention to make sure the value chosen for the tenant is different that what is specified in the users customer attribute.
+you will see on the screen "failed to load" message on the screen, in the CloudWatch logs you will see dberror saying this action is blocked. 
+
+**NOTE:**  "dynamodb:Scan" is removed from the authorized actions because it bypasses the role condition.
+
+
 
 ## Setup
 
