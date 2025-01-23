@@ -26,8 +26,9 @@ you will see on the screen "failed to load" message on the screen, in the CloudW
 
 1) Deploy the environment.  If you are not familiar with CDK please see the [Getting Started](https://docs.aws.amazon.com/cdk/v2/guide/getting_started.html)
 ``` bash
-deploy cdk
+./deploy.sh ACCOUNT REGION
 ```
+where ACCOUNT is your account number and REGION is the region to deploy to
 2) Create test data to the Policy table - I did it manually through the web console to have something that looks like the following 
 
 | tenantId (String) | id (String) |
